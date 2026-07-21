@@ -1,0 +1,10 @@
+.productImg{
+  max-width: 200px;
+}
+
+.productCard{
+  border: 1px solid black;
+  margin: 20px;
+  border-radius: 20px;
+  padding: 30px;
+}

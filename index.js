@@ -1,7 +1,5 @@
 import express from 'express'
 import mongoose from 'mongoose'
-import Student from './models/student.js'
-import StudentRouter from './routers/StudentRouter.js'
 import userRouter from './routers/userRouter.js'
 import jwt from 'jsonwebtoken'
 import authenticateUser from './middleware/authentication.js'
@@ -23,7 +21,6 @@ app.use( express.json() )
 
 app.use(authenticateUser)
 
-app.use("/students",StudentRouter)
 app.use("/users",userRouter) //plugging
 app.use("/products",productRouter)
 
