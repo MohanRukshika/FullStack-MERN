@@ -35,7 +35,8 @@ export async function createProduct(req,res) {
             brand:req.body.brand,
             model:req.body.model,
             category:req.body.category,
-            stock:req.body.stock
+            stock:req.body.stock,
+            isAvailable:req.body.isAvailable
         })
 
         await newProduct.save()
@@ -45,11 +46,18 @@ export async function createProduct(req,res) {
         })
         
 
-    }catch(error){
-        res.status(500).json({
-            message:"Error creating product",error
-        })
-    }
+    }catch(error) {
+    console.error("========== CREATE PRODUCT BACKEND ERROR ==========");
+    console.error(error);
+    console.error("Message:", error.message);
+    console.error("Name:", error.name);
+    console.error("Errors:", error.errors);
+
+    res.status(500).json({
+        message: "Error creating product",
+        error: error.message
+    });
+}
 }
 
 export function isAdmin(req){
@@ -65,11 +73,13 @@ export function isAdmin(req){
 
 export async function getAllProducts(req,res) {
     try{
-        if(isAdmin(req)){
+            const pageSize = req.params.pageSize; //how many orders should be visible in one page
+            const pageNumber = req.params.pageNumber
+
             const products = await Product.find({isAvailable:true});
 
             res.json(products);
-        }
+        
     }catch(error){
         res.status(500).json({
             message:"Error finding products"
@@ -127,7 +137,8 @@ export async function updateProduct(req,res){
             brand:req.body.brand,
             model:req.body.model,
             category:req.body.category,
-            stock:req.body.stock 
+            stock:req.body.stock,
+            isAvailable:req.body.isAvailable 
         })
 
         res.status(200).json({
@@ -141,12 +152,7 @@ export async function updateProduct(req,res){
 }
 
 export async function getProductById(req,res){
-    if(!isAdmin(req)){
-        res.status(403).json({
-            message:"Admin Only. Access Denied"
-        })
-        return
-    }
+    
 
     try{
         const product = await Product.findOne({
@@ -161,9 +167,18 @@ export async function getProductById(req,res){
             if(isAdmin(req)){
                 res.json(product)
             }else{
-                res.status(403).json({
-                    message:"Access denied, only admin can access"
-                })
+                if(product.isAvailable){
+                    res.json(product)
+                }else{
+                    if(isAdmin(req)){
+                        res.json(product)
+                    }else{
+                        res.status(403).json({
+                        message:"Access denied, only admin can access"
+                        })
+                    }
+                }
+                
             }
         }
     }catch(error){

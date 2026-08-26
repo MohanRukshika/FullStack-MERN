@@ -1,6 +1,8 @@
 import User from "../models/user.js";
 import bcrypt from 'bcrypt'
 import jwt from "jsonwebtoken";
+import dotenv from 'dotenv';
+dotenv.config();
 
 export async function createUser(req,res){
 
@@ -39,7 +41,7 @@ export async function loginUser(req,res){
         
         if(user==null){
             res.status(404).json({
-                message:"user not found"
+                message:"User not found"
             })
         }else{
             const isPasswordCorrect=bcrypt.compareSync(req.body.password,user.password)
@@ -56,13 +58,14 @@ export async function loginUser(req,res){
                     image:user.image
                 }
 
-                const token=jwt.sign(payload,"myBackendProject",{
+                const token=jwt.sign(payload,process.env.JWT_Secret_Key,{
                     expiresIn:"24h"
                 })
 
                 res.json({
                     message:"Login successful",
-                    "token":token
+                    "token":token,
+                    "isAdmin":user.isAdmin
                 })
             }else{
                 res.status(401).json({
@@ -72,6 +75,9 @@ export async function loginUser(req,res){
         }
 
     }catch(error){
-
+        console.log("Login error:", error.message)  // shows error in terminal
+        res.status(500).json({
+        message: error.message
+    })
     }
 }

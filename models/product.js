@@ -42,7 +42,8 @@ const productSchema= new mongoose.Schema({
     },
     category:{
         type:String,
-        required:true
+        required:true,
+        default:"Living Room"
     },
     isAvailable:{
         type:Boolean,
