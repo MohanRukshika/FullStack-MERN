@@ -1,7 +1,7 @@
 import Order from "../models/order.js";
 import Product from "../models/product.js";
 
-export default async function createOrder(req, res) {
+export async function createOrder(req, res) {
     const user = req.user;
 
     if (user == null) {
@@ -111,15 +111,61 @@ export async function getOrder(req,res){
             return
         }
 
+        const pageSizeInString = req.params.pageSize || "10"; //how many orders should be visible in one page
+        const pageNumberInString = req.params.pageNumber || "1"
+
+        const pageSize = parseInt(pageSizeInString)
+        const pageNumber = parseInt(pageNumberInString)
+
+
+        if(isNaN(pageSize) || isNaN(pageNumber)){
+            res.status(400).json({
+                message : "Invalid page size or page number"
+            })
+        }
+
         if(req.user.isAdmin){
-            const orders = await Order.find();
-            res.status(200).json(orders);
+
+            const orderCount = await Order.countDocuments()
+            const totalPage = Math.ceil(orderCount/pageSize)
+            const orders = await Order.find().sort({date:-1}).skip((pageNumber-1)*pageSize).limit(pageSize)
+
+            res.status(200).json({
+                orders : orders,
+                totalPages : totalPage,
+                total: orderCount
+            });
+
         }else{
-            const orders = await Order.find({email:req.user.email})
+            const orderCount = await Order.countDocuments({email:req.user.email})
+            const orders = await Order.find({email:req.user.email}).sort({date:-1}).skip((pageNumber-1)*pageSize).limit(pageSize)
             res.status(200).json(orders)
         }
 
     }catch(error){
 
+    }
+}
+
+export async function updateStatusAndNotes(req,res){
+    if(req.user && req.user.isAdmin){
+        try{
+            const orderID =req.params.orderID
+
+            await Order.findOneAndUpdate(
+                {orderID:orderID},
+                {status:req.body.status , notes:req.body.notes}
+            )
+
+            res.status(200).json({
+            message:"Details updated successfully"
+        })
+        }catch(error){
+            console.log(error)
+        }
+    }else{
+        res.status(401).json({
+            message:"You need to be logged in to update details"
+        })
     }
 }

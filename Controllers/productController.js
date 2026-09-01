@@ -73,12 +73,10 @@ export function isAdmin(req){
 
 export async function getAllProducts(req,res) {
     try{
-            const pageSize = req.params.pageSize; //how many orders should be visible in one page
-            const pageNumber = req.params.pageNumber
 
-            const products = await Product.find({isAvailable:true});
+        const products = await Product.find({isAvailable:true});
 
-            res.json(products);
+        res.json(products);
         
     }catch(error){
         res.status(500).json({
@@ -184,6 +182,27 @@ export async function getProductById(req,res){
     }catch(error){
         res.status(500).json({
             message:"Error finding the product"
+        })
+    }
+}
+
+export async function searchProducts(req,res){
+    try{
+        const query = req.params.query;
+
+        const products = await Product.find({
+            $or :[
+                {name : {$regex : query ,$options :"i"}},
+                {description : {$regex : query ,$options :"i"}},
+                {altNames : {$elemMatch:{$regex : query ,$options :"i"}}}
+            ]
+        })
+
+        res.json(products)
+
+    }catch(error){
+        res.status(500).json({
+            message:"Error searching products"
         })
     }
 }

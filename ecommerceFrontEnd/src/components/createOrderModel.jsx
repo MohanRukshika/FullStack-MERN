@@ -53,14 +53,14 @@ export default function CreateOrderModel(props) {
     }
 
     const cart = props.cart
-
+    const btnname = props.btnname
     return (
         <>
             <button
                 className="bg-accent text-white px-4 py-2 rounded-lg font-semibold"
                 onClick={() => setIsModelOpen(true)}
             >
-                Checkout
+                {btnname}
             </button>
 
             {isModelOpen && (

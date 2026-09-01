@@ -30,7 +30,7 @@ export default function ProductOverview(){
 
     return(
         <>
-            <div className="w-full min-h-screen flex justify-center ">
+            <div className="w-full min-h-screen flex justify-center mb-12 md:mb-0">
                 {
                     status === "Loading" && <LoadingAnimation/>
                 }
@@ -47,19 +47,19 @@ export default function ProductOverview(){
                     )
                 }
                 {
-                    status === "success" && <div className="w-full min-h-screen flex m-10">
-                    <div className="w-1/2">
+                    status === "success" && <div className="w-full min-h-screen flex flex-col lg:flex-row gap-6 lg:gap-10 px-4 md:px-8 lg:px-10 py-6 lg:py-10">
+                    <div className="h-[450px] lg:h-[550px] lg:w-1/2 flex justify-center">
                         <ImageSlideShow images={product.image} />
                     </div>
-                    <div className="w-1/2 flex flex-col pt-5  font-semibold text-secondary ">
-                        <h1 className="text-3xl text-center">{product.name}</h1>
-                           <div className="flex items-center gap-2 text-xl text-[#791b10]/90 text-center">
-                                {product.altNames.map((alternativeName , index)=>{
-                                    return(
-                                        <span key={index} className="text-xl text-[#791b10]/90 ml-2 mt-2">  {index > 0 && " | "} {alternativeName} </span>
-                                    )
-                                })
-                            }
+                    <div className="w-full lg:w-1/2 flex flex-col pt-2 lg:pt-5 font-semibold text-secondary ">
+                        <h1 className="text-2xl md:text-3xl text-center">{product.name}</h1>
+                           <div className="flex flex-wrap justify-center items-center gap-x-2 gap-y-1 mt-1 text-base md:text-xl text-[#791b10]/90">
+                            {product.altNames.map((alternativeName, index) => (
+                                <span key={index}>
+                                    {index > 0 && " | "}
+                                    {alternativeName}
+                                </span>
+                            ))}
                             </div>
                             <h2 className="text-accent/50 mt-2 ml-2">{product.productId}</h2>
                             <h3 className="text-2xl text-accent mt-2 ml-2 font-bold">LKR {product.price.toFixed(2)}</h3>
