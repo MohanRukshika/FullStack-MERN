@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
     service:"gmail",
     host:"smtp.gmail.com",
     port:587,
-    secure:false,// no need hash
+    secure:false,// no need encryption
     auth:{
         user:process.env.Gmail,
         pass:process.env.Gmail_AppPassword
@@ -105,7 +105,7 @@ export async function loginUser(req,res){
     }
 }
 
-export async function updateUserDetails(){
+export async function updateUserDetails(req,res){
     if(req.user == null){
         res.status(401).json({
             message : "Unauthorized"
@@ -113,7 +113,7 @@ export async function updateUserDetails(){
     }else{
         try{
 
-            await User.findByIdAndUpdate(
+            await User.findOneAndUpdate(
                 {email:req.user.email},
                 {firstName:req.body.firstName , lastName:req.body.lastName}
             )
